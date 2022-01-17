@@ -9,7 +9,7 @@ services:
     env_file:
       - ./db/postgresql/.env
     volumes:
-      - ./db/postgresql/data:/var/lib/postgresql/data
+    - postgresql_data:/var/lib/postgresql/data
     restart: on-failure
     networks:
       foodin_network:
@@ -71,3 +71,6 @@ networks:
     driver: bridge
     ipam:
       driver: default
+
+volumes:
+  postgresql_data:
