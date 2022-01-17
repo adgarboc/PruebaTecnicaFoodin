@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  db_postgresql:
+    container_name: foodin_db_postgresql
+    image: postgres:13-alpine3.15
+    ports:
+      - "5470:5432"
+    env_file:
+      - ./db/postgresql/.env
+    volumes:
+      - ./db/postgresql/data:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      foodin_network:
+        aliases:
+          - db_postgresql_host
+
+  db_sqlserver:
+    container_name: foodin_db_sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    user: root
+    ports:
+      - "1471:1433"
+    env_file:
+      - ./db/sqlserver/.env
+    volumes:
+      - ./db/sqlserver/data:/var/opt/mssql/data
+    restart: on-failure
+    networks:
+      foodin_network:
+        aliases:
+          - db_sqlserver_host
+
+  backend_django:
+    container_name: foodin_backend_django
+    build: ./backend/django
+    command: "python manage.py runserver 0.0.0.0:80"
+    ports:
+      - "7070:80"
+    env_file:
+      - ./backend/django/.env
+    volumes:
+      - ./backend/django:/home/FoodinBackend
+    depends_on:
+      - db_postgresql
+    restart: on-failure
+    networks:
+      foodin_network:
+        aliases:
+          - backend_django_host
+
+  backend_aspnet:
+    container_name: foodin_backend_aspnet
+    build: ./backend/aspnet
+    ports:
+      - "7071:80"
+    volumes:
+      - ./backend/aspnet:/code
+    depends_on:
+      - db_sqlserver
+    restart: on-failure
+    networks:
+      foodin_network:
+        aliases:
+          - backend_aspnet_host
+
+networks:
+  foodin_network:
+    name: foodin_network
+    driver: bridge
+    ipam:
+      driver: default
