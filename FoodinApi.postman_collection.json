@@ -72,8 +72,17 @@
 		{
 			"name": "PUT",
 			"request": {
-				"method": "GET",
+				"method": "PUT",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"Producto 1\",\r\n    \"descripcion\": \"description\",\r\n    \"precio\": \"5\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{host}}api/v1/product/3",
 					"host": [
